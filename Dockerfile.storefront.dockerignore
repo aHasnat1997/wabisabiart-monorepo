@@ -1,0 +1,17 @@
+# This context is specific to Dockerfile.storefront.
+# The storefront has no local workspace-package dependencies, so only its
+# sources and the shared Bun lockfile need to be sent to Docker.
+**
+!Dockerfile.storefront
+!bun.lock
+!apps/
+!apps/storefront/
+!apps/storefront/**
+
+# Dependencies and build output are created inside the image.
+apps/storefront/node_modules
+apps/storefront/node_modules/**
+apps/storefront/.next
+apps/storefront/.next/**
+apps/storefront/.env
+apps/storefront/.env.*

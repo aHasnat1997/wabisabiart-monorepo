@@ -7,7 +7,7 @@ import { ChatWindow } from "./Chatwindow";
 
 interface MessagesClientProps {
   conversations: Conversation[];
-  CURRENT_USER_ID: string;
+  CURRENT_USER_ID: string | undefined;
 }
 
 export function MessagesClient({

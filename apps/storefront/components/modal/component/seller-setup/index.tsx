@@ -45,8 +45,8 @@ export default function SellerSetup() {
       try {
         const response = await profileInfo();
         console.log(response);
-        setUserId(response?.id);
-        setEmail(response?.email);
+        setUserId(response?.id ?? null);
+        setEmail(response?.email ?? null);
       } catch (error) {
         console.error(error);
       }

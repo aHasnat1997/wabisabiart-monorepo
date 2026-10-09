@@ -10,7 +10,7 @@ export default async function Navbar() {
   // Both calls run in parallel on the server — no client-side waterfalls
   const authenticated = await isUser();
   const profileData = authenticated
-    ? await profileInfo().catch(() => undefined)
+    ? (await profileInfo().catch(() => undefined)) ?? undefined
     : undefined;
 
   return (

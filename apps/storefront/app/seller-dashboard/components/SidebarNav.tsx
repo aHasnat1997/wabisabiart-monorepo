@@ -34,7 +34,7 @@ const SidebarNav = () => {
     const loadProfile = async () => {
       try {
         const response = await profileInfo();
-        setProfileData(response);
+        setProfileData(response ?? undefined);
       } catch (error) {
         console.error(error);
       }

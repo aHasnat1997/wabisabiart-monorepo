@@ -8,12 +8,9 @@
 FROM oven/bun:1-alpine AS deps
 WORKDIR /app
 
-# Copy workspace root manifests
-COPY package.json bunfig.toml ./
-
-# Copy storefront package manifest + lock file
+# Copy only the storefront manifest and the shared dependency lockfile.
+COPY bun.lock ./
 COPY apps/storefront/package.json ./apps/storefront/
-COPY apps/storefront/bun.lock* ./apps/storefront/
 
 # Install storefront dependencies (isolated)
 WORKDIR /app/apps/storefront
