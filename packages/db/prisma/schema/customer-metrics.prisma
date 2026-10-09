@@ -1,0 +1,21 @@
+model CustomerMetrics {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String    @db.Uuid
+  period             String    @db.Text // "2026-04" or "2026-W15"
+  orderCount         Int       @default(0)
+  totalSpent         Decimal   @db.Decimal(12, 2)
+  avgOrderValue      Decimal   @db.Decimal(12, 2)
+  lastOrderDate      DateTime? @db.Timestamptz(6)
+  repeatPurchase     Boolean   @default(false)
+  npsScore           Int?
+  churnRiskPercent   Decimal?  @db.Decimal(5, 2)
+  repurchaseInterval Int?
+  createdAt          DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period])
+  @@index([createdAt, churnRiskPercent])
+  @@schema("customer")
+}

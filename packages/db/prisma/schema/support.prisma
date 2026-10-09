@@ -1,0 +1,46 @@
+model SupportContactDetails {
+  id                 String   @id @default(uuid())
+  email              String   @unique @db.Text
+  phoneNumber        String?  @db.Text
+  availableTimeRange String?  @db.Text
+  availableWeekRange String?  @db.Text
+  responseTime       String?  @db.Text
+  createdAt          DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@schema("support")
+}
+
+model SupportTicket {
+  id          String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String                @db.Uuid
+  subject     String                @db.Text
+  category    SupportTicketCategory
+  message     String                @db.Text
+  status      SupportTicketStatus?  @default(OPEN)
+  priority    SupportTicketPriority @default(MEDIUM)
+  attachments String[]              @default([])
+  resolvedAt  DateTime?             @db.Timestamptz(6)
+  createdAt   DateTime              @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime              @default(now()) @updatedAt @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@schema("support")
+}
+
+model SupportEmail {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstName String   @db.Text
+  lastName  String   @db.Text
+  email     String   @db.Text
+  subject   String   @db.Text
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@schema("support")
+}

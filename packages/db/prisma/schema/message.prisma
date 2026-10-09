@@ -1,0 +1,40 @@
+model Conversation {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customerId    String           @db.Uuid
+  sellerId      String?          @db.Uuid // nullable for support conversations
+  orderId       String?          @db.Uuid
+  type          ConversationType @default(general)
+  isArchived    Boolean          @default(false)
+  lastMessage   String?          @db.Text
+  lastMessageAt DateTime?        @db.Timestamptz(6)
+  createdAt     DateTime         @default(now()) @db.Timestamptz(6)
+
+  customer User           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  seller   SellerProfile? @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  messages ChatMessage[]
+
+  @@unique([customerId, sellerId, orderId])
+  @@index([customerId])
+  @@index([sellerId])
+  @@index([type])
+  @@schema("message")
+}
+
+model ChatMessage {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String    @db.Uuid
+  senderId       String    @db.Uuid
+  content        String    @db.Text
+  attachments    String[]  @default([])
+  isRead         Boolean   @default(false)
+  readAt         DateTime? @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([conversationId, createdAt])
+  @@index([conversationId, isRead])
+  @@schema("message")
+}

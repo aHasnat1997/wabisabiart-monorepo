@@ -1,0 +1,15 @@
+services:
+  admin-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_MEDIA_URL: ${VITE_MEDIA_URL}
+        VITE_APP_MAP_ID: ${VITE_APP_MAP_ID}
+        NGINX_API_URL: ${NGINX_API_URL}
+    environment:
+      NGINX_API_URL: ${NGINX_API_URL}
+    ports:
+      - "80:80"
+    restart: unless-stopped

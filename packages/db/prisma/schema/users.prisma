@@ -1,0 +1,180 @@
+model User {
+  id                     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                  String       @unique @db.Text
+  phoneNumber            String?      @unique @db.Text
+  passwordHash           String       @db.Text
+  fullName               String       @db.Text
+  dob                    DateTime?    @db.Timestamptz(6)
+  role                   UserRole     @default(customer)
+  avatarUrl              String?      @default("/placeholders/profile-placeholder.png")
+  emailVerified          Boolean      @default(false)
+  phoneVerified          Boolean      @default(false)
+  isActive               Boolean      @default(true)
+  twoFactorEnabled       Boolean      @default(false)
+  otpProvider            OtpProvider? @default(email)
+  marketingEmailsEnabled Boolean      @default(false)
+  acceptSellerAgreement  Boolean      @default(false)
+  isVip                  Boolean      @default(false)
+  stripeCustomerId       String?      @unique @db.Text
+  lastLoginAt            DateTime?    @db.Timestamptz(6)
+  lastLoginIp            String?      @db.Inet
+  deletedAt              DateTime?    @db.Timestamptz(6)
+  createdAt              DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt              DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
+
+  addresses                 Address[]
+  sellerProfile             SellerProfile?
+  shopSetupRequest          ShopSetupRequest?
+  buyerOrders               Order[]                   @relation("BuyerOrders")
+  paymentMethods            PaymentMethod[]
+  carts                     Cart?
+  products                  Product[]
+  wishlists                 Wishlist[]
+  reviews                   Review[]
+  chatMessages              ChatMessage[]
+  notifications             Notification[]
+  activityLogs              ActivityLog[]
+  supportTickets            SupportTicket[]
+  searchHistories           SearchHistory[]
+  followedShops             ShopFollower[]
+  reportsMade               Report[]                  @relation("ReporterReports")
+  reportsReceived           Report[]                  @relation("ReportedUserReports")
+  shopJournalLikes          ShopJournalLikes[]
+  shopJournalComments       ShopJournalComment[]
+  shopJournalCommentReplies ShopJournalCommentReply[]
+  customerMetrics           CustomerMetrics[]
+  conversations             Conversation[]
+  userSessions              UserSession[]
+
+  @@index([email])
+  @@index([id, isActive, deletedAt])
+  @@schema("user")
+}
+
+model UserSession {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique @db.Text // hashed JWT or session token
+  device    String?  @db.Text // "Chrome 142 on Windows 11"
+  ipAddress String?  @db.Inet
+  location  String?  @db.Text // "Dhaka, Bangladesh"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  expiresAt DateTime @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@schema("user")
+}
+
+model Address {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String   @db.Uuid
+  fullName          String   @db.Text
+  addressLine1      String   @db.Text
+  addressLine2      String?  @db.Text
+  city              String   @db.Text
+  stateProvince     String?  @db.Text
+  postalCode        String   @db.Text
+  country           String   @db.Text
+  phoneNumber       String?  @db.Text
+  isDefaultShipping Boolean  @default(false)
+  isDefaultBilling  Boolean  @default(false)
+  label             String?  @db.Text
+  createdAt         DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shippingOrders Order[] @relation("ShippingAddress")
+
+  @@index([userId])
+  @@index([userId, isDefaultShipping])
+  @@schema("user")
+}
+
+model SellerProfile {
+  id                              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                          String    @unique @db.Uuid
+  stripeAccountId                 String?   @unique @db.Text
+  stripeOnboardingDone            Boolean   @default(false)
+  stripeChargesEnabled            Boolean   @default(false)
+  stripePayoutsEnabled            Boolean   @default(false)
+  shopName                        String
+  shopDescription                 String?   @db.Text
+  shopAnnouncement                String?   @db.Text
+  shopBannerImage                 String?   @default("/placeholders/image-placeholder.png")
+  shopLogo                        String?   @default("/placeholders/image-placeholder.png")
+  address                         String?   @db.Text
+  shopLatitude                    Float?
+  shopLongitude                   Float?
+  shopPolicies                    String?   @db.Text
+  returnPolicy                    String?   @db.Text
+  privacyPolicy                   String?   @db.Text
+  shippingPolicy                  String?   @db.Text
+  totalSales                      Int       @default(0)
+  totalReviews                    Int       @default(0)
+  averageRating                   Decimal   @default(0.00)
+  isVerified                      Boolean   @default(false)
+  isFeatured                      Boolean   @default(false)
+  isActive                        Boolean   @default(true)
+  proofOfIdentity                 String?   @db.Text
+  sampleProducts                  String[]  @default([])
+  isAgreedToTermsAndConditions    Boolean   @default(false)
+  isHandcraftedOrEthicallySourced Boolean   @default(false)
+  verificationDate                DateTime? @db.Timestamptz(6)
+  isVerifiedByAdmin               Boolean?  @default(false)
+  facebookUrl                     String?   @db.Text
+  instagramUrl                    String?   @db.Text
+  twitterUrl                      String?   @db.Text
+  websiteUrl                      String?   @db.Text
+  createdAt                       DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt                       DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+
+  user                     User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sellerOrders             Order[]                   @relation("SellerOrders")
+  promotions               Promotion[]
+  coupons                  Coupon[]
+  globalFreeShippingConfig GlobalFreeShippingConfig?
+  freeShippingRules        FreeShippingRule[]
+  wishlistAutoCouponConfig WishlistAutoCouponConfig?
+  wishlistCouponLogs       WishlistCouponLog[]
+  followers                ShopFollower[]
+  announcements            Announcement[]
+  shopJournals             ShopJournal[]
+  payouts                  SellerPayout[]
+  conversations            Conversation[]
+  externalStoreConnections ExternalStoreConnection[]
+
+  @@index([userId])
+  @@index([id, isActive])
+  @@schema("user")
+}
+
+model ShopSetupRequest {
+  id                              String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                          String                 @unique @db.Uuid
+  shopName                        String                 @db.Text
+  shopDescription                 String?                @db.Text
+  address                         String?                @db.Text
+  shopLogo                        String?                @default("/placeholders/image-placeholder.png")
+  shopBannerImage                 String?                @default("/placeholders/image-placeholder.png")
+  proofOfIdentity                 String?                @db.Text
+  sampleProducts                  String[]               @default([])
+  isAgreedToTermsAndConditions    Boolean                @default(false)
+  isHandcraftedOrEthicallySourced Boolean                @default(false)
+  status                          ShopSetupRequestStatus @default(pending)
+  reviewNote                      String?                @db.Text
+  reviewedAt                      DateTime?              @db.Timestamptz(6)
+  reviewedByAdminId               String?                @db.Uuid
+  createdAt                       DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt                       DateTime               @default(now()) @updatedAt @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([reviewedByAdminId])
+  @@schema("user")
+}

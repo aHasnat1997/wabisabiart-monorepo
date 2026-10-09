@@ -1,0 +1,33 @@
+model Cart {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String     @unique @db.Uuid
+  status    CartStatus @default(active)
+  createdAt DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime   @default(now()) @updatedAt @db.Timestamptz(6)
+
+  user  User       @relation(fields: [userId], references: [id])
+  items CartItem[]
+
+  @@index([userId])
+  @@schema("cart")
+}
+
+model CartItem {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cartId        String   @db.Uuid
+  productId     String   @db.Uuid
+  variantId     String?  @db.Uuid
+  quantity      Int      @default(1)
+  customization String?  @db.Text
+  addedAt       DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  cart    Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+  @@schema("cart")
+}

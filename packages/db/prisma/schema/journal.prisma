@@ -1,0 +1,65 @@
+model ShopJournal {
+  id           String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shopId       String             @db.Uuid
+  title        String             @db.Text
+  bannerImage  String?            @default("placeholders/image-placeholder.png") @db.Text
+  shortExcerpt String?            @db.Text
+  content      String             @db.Text
+  published    Boolean?           @default(false)
+  approved     Boolean?           @default(false)
+  postStatus   ShopJournalStatus? @default(publishing_request)
+  createdAt    DateTime           @default(now()) @db.Timestamptz(6)
+
+  shop                SellerProfile        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopJournalLikes    ShopJournalLikes[]
+  shopJournalComments ShopJournalComment[]
+
+  @@index([shopId])
+  @@schema("user")
+}
+
+model ShopJournalLikes {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  journalId String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  journal ShopJournal @relation(fields: [journalId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([journalId])
+  @@index([journalId, userId])
+  @@schema("user")
+}
+
+model ShopJournalComment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  journalId String   @db.Uuid
+  comment   String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user                      User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  journal                   ShopJournal               @relation(fields: [journalId], references: [id], onDelete: Cascade)
+  shopJournalCommentReplies ShopJournalCommentReply[]
+
+  @@index([userId])
+  @@index([journalId])
+  @@schema("user")
+}
+
+model ShopJournalCommentReply {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  commentId String   @db.Uuid
+  reply     String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment ShopJournalComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([commentId])
+  @@schema("user")
+}

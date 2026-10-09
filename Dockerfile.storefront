@@ -1,0 +1,64 @@
+# ================================================================
+# Dockerfile.storefront
+# Next.js storefront — production multi-stage build
+# Build context: monorepo root
+# ================================================================
+
+# ── Stage 1: Install dependencies ────────────────────────────────────────────
+FROM oven/bun:1-alpine AS deps
+WORKDIR /app
+
+# Copy workspace root manifests
+COPY package.json bunfig.toml ./
+
+# Copy storefront package manifest + lock file
+COPY apps/storefront/package.json ./apps/storefront/
+COPY apps/storefront/bun.lock* ./apps/storefront/
+
+# Install storefront dependencies (isolated)
+WORKDIR /app/apps/storefront
+RUN bun install --frozen-lockfile
+
+# ── Stage 2: Build ───────────────────────────────────────────────────────────
+FROM oven/bun:1-alpine AS builder
+WORKDIR /app
+
+# Carry over installed modules
+COPY --from=deps /app/apps/storefront/node_modules ./apps/storefront/node_modules
+
+# Copy full storefront source
+COPY apps/storefront ./apps/storefront
+
+WORKDIR /app/apps/storefront
+
+# Build-time env vars (injected via --build-arg or CI/CD secrets)
+ARG NEXT_PUBLIC_API_BASE_URL
+ARG NEXT_PUBLIC_MEDIA_URL
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ARG NEXT_PUBLIC_SOCKET_URL
+
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_MEDIA_URL=$NEXT_PUBLIC_MEDIA_URL
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ENV NEXT_PUBLIC_SOCKET_URL=$NEXT_PUBLIC_SOCKET_URL
+
+RUN bun run build
+
+# ── Stage 3: Production runner ───────────────────────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3001
+
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser  --system --uid 1001 nextjs
+
+COPY --from=builder /app/apps/storefront/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/storefront/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/storefront/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3001
+
+CMD ["node", "server.js"]

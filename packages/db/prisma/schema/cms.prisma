@@ -1,0 +1,31 @@
+model Banner {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title      String   @db.Text
+  subtitle   String?  @db.Text
+  imageUrl   String   @db.Text
+  background String   @db.Text
+  isActive   Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@schema("cms")
+}
+
+model BrandSettings {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String   @db.Text
+  logoUrl   String?  @db.Text
+  faviconUrl String? @db.Text
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@schema("cms")
+}
+
+model FooterSettings {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  text      String   @db.Text
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@schema("cms")
+}

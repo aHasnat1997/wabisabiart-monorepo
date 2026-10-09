@@ -1,0 +1,33 @@
+model LegalPage {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type      LegalPageType @unique
+  content   String        @db.Text
+  createdAt DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@schema("legal")
+}
+
+model FaqCategory {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String        @unique
+  order     Int           @default(0)
+  questions FaqQuestion[]
+  createdAt DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@schema("legal")
+}
+
+model FaqQuestion {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  question   String
+  answer     String      @db.Text
+  order      Int         @default(0)
+  categoryId String      @db.Uuid
+  category   FaqCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@schema("legal")
+}

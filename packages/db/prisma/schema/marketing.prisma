@@ -1,0 +1,70 @@
+model GlobalFreeShippingConfig {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sellerId           String   @unique @db.Uuid
+  isEnabled          Boolean  @default(false)
+  minimumOrderAmount Decimal  @default(0) @db.Decimal(12, 2)
+  triggerCount       Int      @default(0)
+  updatedAt          DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  seller SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@index([sellerId])
+  @@schema("promotion")
+}
+
+model FreeShippingRule {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sellerId           String   @db.Uuid
+  name               String   @db.Text
+  minimumOrderAmount Decimal  @db.Decimal(12, 2)
+  region             String   @db.Text
+  isActive           Boolean  @default(true)
+  orderCount         Int      @default(0)
+  createdAt          DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  seller SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@index([sellerId])
+  @@index([sellerId, isActive])
+  @@schema("promotion")
+}
+
+model WishlistAutoCouponConfig {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sellerId              String   @unique @db.Uuid
+  isEnabled             Boolean  @default(false)
+  discountPercentage    Decimal  @default(5) @db.Decimal(5, 2)
+  validityDays          Int      @default(30)
+  sendEmailNotification Boolean  @default(true)
+  autoApplyAtCheckout   Boolean  @default(true)
+  updatedAt             DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  seller SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@index([sellerId])
+  @@schema("wishlist")
+}
+
+model WishlistCouponLog {
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sellerId       String               @db.Uuid
+  customerId     String               @db.Uuid
+  productId      String               @db.Uuid
+  productName    String               @db.Text
+  couponCode     String               @db.Text
+  status         WishlistCouponStatus @default(GENERATED)
+  generatedAt    DateTime             @default(now()) @db.Timestamptz(6)
+  redeemedAt     DateTime?            @db.Timestamptz(6)
+  expiresAt      DateTime             @db.Timestamptz(6)
+  discountAmount Decimal?             @db.Decimal(12, 2)
+
+  seller SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@index([sellerId])
+  @@index([customerId])
+  @@index([productId])
+  @@index([couponCode])
+  @@index([status])
+  @@schema("wishlist")
+}

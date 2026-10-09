@@ -1,0 +1,30 @@
+// hooks/use-media-query.ts
+"use client";
+
+import { useState, useEffect } from "react";
+
+export function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const media = window.matchMedia(query);
+
+    // Update state with initial value
+    const updateMatches = () => {
+      setMatches(media.matches);
+    };
+
+    // Set initial
+    updateMatches();
+
+    // Use modern event listener
+    media.addEventListener("change", updateMatches);
+
+    // Cleanup
+    return () => media.removeEventListener("change", updateMatches);
+  }, [query]); // Only depend on query
+
+  return matches;
+}

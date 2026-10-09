@@ -1,0 +1,40 @@
+{
+  "name": "wabisabiart-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "bun@1.3.9",
+  "description": "WabiSabiArt (Rightkitkatie) monorepo — storefront, admin dashboard, and backend API",
+  "workspaces": [
+    "apps/*",
+    "packages/db",
+    "packages/types/admin",
+    "packages/types/storefront",
+    "packages/types/backend"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:backend": "turbo dev --filter=@wabisabiart/backend",
+    "dev:storefront": "turbo dev --filter=@wabisabiart/storefront",
+    "dev:admin": "turbo dev --filter=@wabisabiart/admin",
+    "build": "turbo build",
+    "build:backend": "turbo build --filter=@wabisabiart/backend",
+    "build:storefront": "turbo build --filter=@wabisabiart/storefront",
+    "build:admin": "turbo build --filter=@wabisabiart/admin",
+    "lint": "turbo lint",
+    "db:generate": "turbo db:generate --filter=@wabisabiart/db",
+    "db:migrate": "turbo db:migrate --filter=@wabisabiart/db",
+    "db:migrate:deploy": "turbo db:migrate:deploy --filter=@wabisabiart/db",
+    "db:studio": "turbo db:studio --filter=@wabisabiart/db",
+    "db:seed": "turbo db:seed --filter=@wabisabiart/db",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.6",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  }
+}

@@ -1,0 +1,42 @@
+model Review {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId         String         @db.Uuid
+  userId            String         @db.Uuid
+  orderId           String?        @db.Uuid
+  rating            Int
+  comment           String?        @db.Text
+  images            String[]       @default([])
+  verifiedPurchase  Boolean        @default(false)
+  helpfulCount      Int            @default(0)
+  notHelpfulCount   Int            @default(0)
+  sellerResponse    String?        @db.Text
+  sellerRespondedAt DateTime?      @db.Timestamptz(6)
+  createdAt         DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime       @default(now()) @updatedAt @db.Timestamptz(6)
+  // status            ReviewStatus   @default(pending)
+  platform          ReviewPlatform @default(WABISAVIART)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([userId])
+  @@schema("review")
+}
+
+model ExternalStoreConnection {
+  id              String           @id @default(uuid())
+  sellerProfileId String           @unique @db.Uuid
+  platform        ExternalPlatform
+  shopDomain      String // Shopify permanent domain (.my_shopify.com) or Etsy Shop ID
+  accessToken     String // Encrypted token
+  refreshToken    String? // Encrypted token (primarily for Etsy)
+  expiresAt       DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([sellerProfileId, platform])
+  @@schema("review")
+}

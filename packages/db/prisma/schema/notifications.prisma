@@ -1,0 +1,19 @@
+model Notification {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @db.Uuid
+  type      String    @db.Text
+  title     String    @db.Text
+  message   String    @db.Text
+  actionUrl String?   @db.Text
+  metadata  Json?     @db.JsonB
+  isRead    Boolean   @default(false)
+  readAt    DateTime? @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@schema("notification")
+}

@@ -1,0 +1,64 @@
+# ================================================================
+# Dockerfile.backend
+# NestJS backend API — production multi-stage build
+# Build context: monorepo root
+# ================================================================
+
+# ── Stage 1: Builder ─────────────────────────────────────────────────────────
+FROM oven/bun:1 AS builder
+WORKDIR /app
+
+# Install Node.js + npm (required for nest build tooling)
+RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy workspace manifests
+COPY package.json bunfig.toml turbo.json ./
+COPY apps/backend/package.json ./apps/backend/
+COPY packages/db/package.json ./packages/db/
+COPY packages/types/admin/package.json ./packages/types/admin/
+COPY packages/types/backend/package.json ./packages/types/backend/
+COPY packages/types/storefront/package.json ./packages/types/storefront/
+
+# Install workspace dependencies
+WORKDIR /app
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install
+
+# Copy backend and database package source
+COPY apps/backend ./apps/backend
+COPY packages/db ./packages/db
+
+WORKDIR /app/apps/backend
+
+# Generate the shared Prisma client and compile the backend.
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost/dummy" \
+    bunx turbo run build --filter=@wabisabiart/backend
+
+# ── Stage 2: Production runner ───────────────────────────────────────────────
+FROM oven/bun:1 AS production
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Non-root user
+RUN groupadd --system --gid 1001 appgroup \
+ && useradd  --system --uid 1001 --gid appgroup --no-create-home appuser
+
+# Copy only what's needed to run
+COPY --from=builder --chown=appuser:appgroup /app/apps/backend/dist         ./dist
+COPY --from=builder --chown=appuser:appgroup /app/apps/backend/src/view     ./src/view
+COPY --from=builder --chown=appuser:appgroup /app/apps/backend/public       ./public
+COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /app/packages/db ./packages/db
+COPY --from=builder --chown=appuser:appgroup /app/package.json ./package.json
+COPY --from=builder --chown=appuser:appgroup /app/turbo.json ./turbo.json
+COPY --from=builder --chown=appuser:appgroup /app/apps/backend/package.json ./apps/backend/package.json
+COPY --chmod=755 --chown=appuser:appgroup \
+  /app/apps/backend/entrypoint.sh ./entrypoint.sh
+
+USER appuser
+EXPOSE 8080
+
+# Use entrypoint if it exists, else start directly
+CMD ["sh", "-c", "bun run db:migrate:deploy && bun dist/src/main.js"]

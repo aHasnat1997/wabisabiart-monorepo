@@ -1,0 +1,303 @@
+enum UserRole {
+  customer
+  seller
+  admin
+  support
+
+  @@map("user_role")
+  @@schema("user")
+}
+
+enum OtpProvider {
+  email
+  phone
+
+  @@map("otp_provider")
+  @@schema("user")
+}
+
+enum ShopSetupRequestStatus {
+  pending
+  approved
+  rejected
+
+  @@map("shop_setup_request_status")
+  @@schema("user")
+}
+
+enum ShopJournalStatus {
+  draft
+  published
+  archived
+  publishing_request
+  rejected
+  blocked
+
+  @@map("shop_journal_status")
+  @@schema("user")
+}
+
+enum ProductStatus {
+  draft
+  pending_review
+  active
+  inactive
+  out_of_stock
+  rejected
+
+  @@map("product_status")
+  @@schema("product")
+}
+
+enum DiscountType {
+  none
+  percentage
+  fixed_amount
+
+  @@map("discount_type")
+  @@schema("product")
+}
+
+enum CategoryType {
+  crafts
+  customization
+  commissions
+  vintage
+
+  @@map("category_type")
+  @@schema("category")
+}
+
+enum ConversationType {
+  general
+  order_inquiry
+  refund_request
+  product_inquiry
+  support // seller <-> admin
+
+  @@map("conversation_type")
+  @@schema("message")
+}
+
+enum OrderStatus {
+  pending_payment
+  payment_failed
+  paid
+  processing
+  shipped
+  in_transit
+  delivered
+  cancelled
+  refunded
+  disputed
+
+  @@map("order_status")
+  @@schema("order")
+}
+
+enum PaymentStatus {
+  pending
+  processing
+  succeeded
+  failed
+  refunded
+  partially_refunded
+  cancelled
+
+  @@map("payment_status")
+  @@schema("payment")
+}
+
+enum ShipmentStatus {
+  pending
+  label_created
+  picked_up
+  in_transit
+  out_for_delivery
+  delivered
+  failed_delivery
+  returned
+
+  @@map("shipment_status")
+  @@schema("shipment")
+}
+
+enum RefundStatus {
+  requested
+  approved
+  rejected
+  processing
+  completed
+  failed
+
+  @@map("refund_status")
+  @@schema("refund")
+}
+
+enum DisputeStatus {
+  open
+  under_review
+  resolved_buyer
+  resolved_seller
+  closed
+  escalated
+
+  @@map("dispute_status")
+  @@schema("dispute")
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+  flagged
+
+  @@map("review_status")
+  @@schema("review")
+}
+
+enum ReviewPlatform {
+  WABISAVIART
+  SHOPIFY
+  ETSY
+
+  @@map("review_platform")
+  @@schema("review")
+}
+
+enum ExternalPlatform {
+  SHOPIFY
+  ETSY
+
+  @@map("external_platform")
+  @@schema("review")
+}
+
+enum CartStatus {
+  active
+  cancel
+  expired
+  ordered
+  completed
+
+  @@map("cart_status")
+  @@schema("cart")
+}
+
+enum CouponType {
+  percentage
+  fixed_amount
+  free_shipping
+  buy_x_get_y
+
+  @@map("coupon_type")
+  @@schema("coupon")
+}
+
+enum PromotionDiscountType {
+  PERCENTAGE
+  FIXED
+  BOGO
+
+  @@map("promotion_discount_type")
+  @@schema("promotion")
+}
+
+enum PromotionApplyTo {
+  ALL_PRODUCTS
+  BY_CATEGORY
+  SPECIFIC_PRODUCTS
+
+  @@map("promotion_apply_to")
+  @@schema("promotion")
+}
+
+enum CouponDiscountType {
+  PERCENTAGE
+  FIXED
+  FREE_SHIPPING
+
+  @@map("coupon_discount_type")
+  @@schema("coupon")
+}
+
+enum CustomerRestriction {
+  ALL_CUSTOMERS
+  NEW_CUSTOMERS
+
+  @@map("customer_restriction")
+  @@schema("coupon")
+}
+
+enum WishlistCouponStatus {
+  GENERATED
+  REDEEMED
+  EXPIRED
+
+  @@map("wishlist_coupon_status")
+  @@schema("wishlist")
+}
+
+enum SupportTicketCategory {
+  ACCOUNT_LOGIN
+  BILLING_PAYMENTS
+  TECHNICAL_ERROR_BUG
+  FEATURE_REQUEST
+  DATA_LOSS_RECOVERY
+  PRIVACY_SECURITY
+  INTEGRATION_API
+  PERFORMANCE_SLOWDOWN
+  REPORTING_ANALYTICS
+  OTHER
+
+  @@map("support_ticket_category")
+  @@schema("support")
+}
+
+enum SupportTicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+
+  @@map("support_ticket_priority")
+  @@schema("support")
+}
+
+enum SupportTicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+
+  @@map("support_ticket_status")
+  @@schema("support")
+}
+
+enum LegalPageType {
+  TERMS_OF_USE
+  PRIVACY_POLICY
+  COOKIE_POLICY
+
+  @@map("legal_page_type")
+  @@schema("legal")
+}
+
+enum ReportStatus {
+  pending
+  approved
+  rejected
+
+  @@map("report_status")
+  @@schema("others")
+}
+
+enum ReportReason {
+  spam
+  counterfeit
+  inappropriate
+  misleading
+  other
+
+  @@map("report_reason")
+  @@schema("others")
+}

@@ -1,0 +1,123 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Product Report Warning</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background-color: #d32f2f;
+        color: white;
+        text-align: center;
+        padding: 24px 20px;
+        border-radius: 5px 5px 0 0;
+      }
+      .header h1 { margin: 0; font-size: 22px; }
+      .content {
+        background-color: #f9f9f9;
+        padding: 30px;
+        border-radius: 0 0 5px 5px;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+      }
+      .detail-box {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 16px 20px;
+        margin: 20px 0;
+      }
+      .detail-row {
+        display: flex;
+        padding: 6px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .detail-row:last-child { border-bottom: none; }
+      .detail-label { font-weight: bold; min-width: 140px; color: #555; }
+      .warning-box {
+        background-color: #fff3e0;
+        border-left: 4px solid #ff9800;
+        padding: 12px 16px;
+        margin: 20px 0;
+        border-radius: 0 4px 4px 0;
+      }
+      .danger-box {
+        background-color: #ffebee;
+        border-left: 4px solid #d32f2f;
+        padding: 12px 16px;
+        margin: 20px 0;
+        border-radius: 0 4px 4px 0;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='header'>
+      <h1>⚠️ Official Warning — Product Report</h1>
+    </div>
+    <div class='content'>
+      <h2>Hello {{sellerName}},</h2>
+      <p>Your product on <strong>{{shopName}}</strong> has received a report that has been reviewed and approved by our admin team.</p>
+
+      <div class='detail-box'>
+        <div class='detail-row'>
+          <span class='detail-label'>Product:</span>
+          <span>{{productTitle}}</span>
+        </div>
+        <div class='detail-row'>
+          <span class='detail-label'>Report Reason:</span>
+          <span>{{reportReason}}</span>
+        </div>
+        <div class='detail-row'>
+          <span class='detail-label'>Total Reports:</span>
+          <span>{{reportCount}} / {{productInactiveThreshold}}</span>
+        </div>
+        {{#if reportDescription}}
+        <div class='detail-row'>
+          <span class='detail-label'>Details:</span>
+          <span>{{reportDescription}}</span>
+        </div>
+        {{/if}}
+        {{#if resolution}}
+        <div class='detail-row'>
+          <span class='detail-label'>Admin Note:</span>
+          <span>{{resolution}}</span>
+        </div>
+        {{/if}}
+      </div>
+
+      {{#if isProductInactive}}
+      <div class='danger-box'>
+        <strong>🚫 Your product has been set to Inactive</strong> because it has reached {{productInactiveThreshold}} approved reports.
+        It is no longer visible to customers. Please contact support to resolve this issue.
+      </div>
+      {{else}}
+      <div class='warning-box'>
+        <strong>⚠️ Warning:</strong> Your product now has <strong>{{reportCount}}</strong> approved report(s).
+        If it reaches <strong>{{productInactiveThreshold}}</strong> reports, it will be automatically set to inactive.
+      </div>
+      {{/if}}
+
+      <p>If your shop accumulates <strong>{{shopFreezeThreshold}}</strong> inactive products, your shop will be frozen and hidden from all listings.</p>
+
+      <p>Please review our policies and ensure your products comply with our community standards. If you believe this report was made in error, please contact our support team.</p>
+
+      <p>Best regards,<br />The Admin Team</p>
+    </div>
+    <div class='footer'>
+      <p>This is an automated warning notice. Please do not ignore this message.</p>
+    </div>
+  </body>
+</html>

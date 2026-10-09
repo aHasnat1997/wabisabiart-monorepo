@@ -1,0 +1,49 @@
+model PaymentMethod {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String   @db.Uuid
+  cardBrand             String   @db.Text
+  cardLast4             String   @db.Text
+  cardExpMonth          Int
+  cardExpYear           Int
+  billingName           String   @db.Text
+  billingAddress        String?  @db.Text
+  billingCity           String?  @db.Text
+  billingState          String?  @db.Text
+  billingZip            String?  @db.Text
+  billingCountry        String?  @db.Text
+  stripePaymentMethodId String?  @unique @db.Text
+  isDefault             Boolean  @default(false)
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions PaymentTransaction[]
+
+  @@index([userId])
+  @@index([userId, isDefault])
+  @@schema("payment")
+}
+
+model PaymentTransaction {
+  id                    String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId               String        @db.Uuid
+  paymentMethodId       String?       @db.Uuid
+  amount                Decimal       @db.Decimal(12, 2)
+  currency              String        @default("USD") @db.Text
+  status                PaymentStatus @default(pending)
+  provider              String        @db.Text
+  providerTransactionId String?       @unique @db.Text
+  providerResponse      Json?         @db.JsonB
+  failureReason         String?       @db.Text
+  metadata              Json?         @db.JsonB
+  processedAt           DateTime?     @db.Timestamptz(6)
+  createdAt             DateTime      @default(now()) @db.Timestamptz(6)
+
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  paymentMethod PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([createdAt])
+  @@schema("payment")
+}

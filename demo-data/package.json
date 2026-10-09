@@ -1,0 +1,16 @@
+{
+  "name": "wabisaviart-demo-data",
+  "version": "1.0.0",
+  "description": "Demo data generator for WabiSaviArt marketplace",
+  "scripts": {
+    "generate": "bun run generate.ts"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "bcrypt": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.3",
+    "@types/bcrypt": "^5.0.2"
+  }
+}

@@ -1,0 +1,77 @@
+model Refund {
+  id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId          String       @db.Uuid
+  amount           Decimal      @db.Decimal(12, 2)
+  reason           String       @db.Text
+  status           RefundStatus @default(requested)
+  requestedBy      String?      @db.Uuid
+  processedBy      String?      @db.Uuid
+  rejectionReason  String?      @db.Text
+  providerRefundId String?      @db.Text
+  requestedAt      DateTime     @default(now()) @db.Timestamptz(6)
+  processedAt      DateTime?    @db.Timestamptz(6)
+  completedAt      DateTime?    @db.Timestamptz(6)
+  createdAt        DateTime     @default(now()) @db.Timestamptz(6)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([requestedBy])
+  @@index([processedBy])
+  @@schema("refund")
+}
+
+model Dispute {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId     String        @db.Uuid
+  reason      String        @db.Text
+  description String        @db.Text
+  status      DisputeStatus @default(open)
+  openedBy    String        @db.Uuid
+  resolution  String?       @db.Text
+  resolvedBy  String?       @db.Uuid
+  openedAt    DateTime      @default(now()) @db.Timestamptz(6)
+  resolvedAt  DateTime?     @db.Timestamptz(6)
+  createdAt   DateTime      @default(now()) @db.Timestamptz(6)
+
+  order    Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  messages DisputeMessage[]
+
+  @@index([orderId])
+  @@index([openedBy])
+  @@index([resolvedBy])
+  @@schema("dispute")
+}
+
+model DisputeMessage {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  disputeId   String   @db.Uuid
+  senderId    String   @db.Uuid
+  message     String   @db.Text
+  attachments Json?    @db.JsonB
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+
+  dispute Dispute @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+
+  @@index([disputeId])
+  @@index([senderId])
+  @@schema("dispute")
+}
+
+model RefundAnalytics {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  period           String   @db.Text // "2026-W15", "2026-04"
+  sellerId         String?  @db.Uuid
+  productId        String?  @db.Uuid
+  totalRefunds     Int      @default(0)
+  totalRefundValue Decimal  @db.Decimal(12, 2)
+  totalOrders      Int      @default(0)
+  refundRate       Decimal  @default(0) @db.Decimal(5, 2)
+  topRefundReason  String?  @db.Text
+  trend            String?  @db.Text // "stable" | "increasing" | "decreasing"
+  createdAt        DateTime @default(now()) @db.Timestamptz(6)
+
+  @@unique([period, sellerId, productId])
+  @@index([refundRate, period])
+  @@schema("refund")
+}

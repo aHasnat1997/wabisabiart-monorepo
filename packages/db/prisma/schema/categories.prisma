@@ -1,0 +1,34 @@
+model Category {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String       @unique @db.Text
+  type          CategoryType @default(crafts)
+  description   String?      @db.Text
+  promotionId   String?      @db.Uuid
+  isFeatured    Boolean      @default(false)
+  isGoodForGift Boolean      @default(false)
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
+
+  subCategories SubCategory[]
+  products      Product[]
+  promotion     Promotion?    @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+
+  @@schema("category")
+}
+
+model SubCategory {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  categoryId  String   @db.Uuid
+  name        String   @db.Text
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([categoryId, name])
+  @@schema("category")
+}

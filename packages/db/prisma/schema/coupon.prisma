@@ -1,0 +1,50 @@
+model Coupon {
+  id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sellerId              String              @db.Uuid
+  code                  String              @db.Text
+  discountType          CouponDiscountType  @default(PERCENTAGE)
+  description           String?             @db.Text
+  discountValue         Decimal             @db.Decimal(12, 2)
+  minimumPurchase       Decimal?            @db.Decimal(12, 2)
+  minimumPurchaseAmount Decimal             @default(0) @db.Decimal(12, 2)
+  maximumDiscount       Decimal?            @db.Decimal(12, 2)
+  buyQuantity           Int?
+  getQuantity           Int?
+  usageLimit            Int?
+  maximumUses           Int                 @default(100)
+  usageLimitPerUser     Int?
+  usedCount             Int                 @default(0)
+  usageCount            Int                 @default(0)
+  startsAt              DateTime            @default(now()) @db.Timestamptz(6)
+  expiresAt             DateTime            @db.Timestamptz(6)
+  customerRestriction   CustomerRestriction @default(ALL_CUSTOMERS)
+  isActive              Boolean             @default(true)
+  createdAt             DateTime            @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime            @default(now()) @updatedAt @db.Timestamptz(6)
+
+  seller    SellerProfile    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  orders    Order[]
+  usageLogs CouponUsageLog[]
+
+  @@unique([sellerId, code])
+  @@index([sellerId])
+  @@index([code])
+  @@index([expiresAt])
+  @@schema("coupon")
+}
+
+model CouponUsageLog {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  couponId       String   @db.Uuid
+  orderId        String   @db.Text
+  customerId     String   @db.Uuid
+  discountAmount Decimal  @db.Decimal(12, 2)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+
+  @@index([couponId])
+  @@index([customerId])
+  @@index([orderId])
+  @@schema("coupon")
+}

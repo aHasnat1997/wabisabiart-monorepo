@@ -1,0 +1,361 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>WabiSaviArt API</title>
+    <link rel='icon' href='logo.svg' type='image/x-icon' />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          'Segoe UI',
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background-color: #0a0e1a;
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* NAV */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 48px;
+        border-bottom: 1px solid #1e293b;
+        background: #0a0e1a;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+
+      .nav-brand img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .nav-brand span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #f1f5f9;
+        letter-spacing: -0.3px;
+      }
+
+      .nav-badge {
+        font-size: 11px;
+        background: #1e3a5f;
+        color: #60a5fa;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .btn-docs {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: color 0.2s;
+      }
+
+      .btn-docs:hover {
+        color: #f1f5f9;
+      }
+
+      .btn-primary {
+        background: #6d8040;
+        color: #fff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8px 18px;
+        border-radius: 6px;
+        transition: background 0.2s;
+      }
+
+      .btn-primary:hover {
+        background: #5a6b34;
+      }
+
+      /* HERO */
+      .hero {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 80px 24px 60px;
+      }
+
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #0f1f35;
+        border: 1px solid #1e3a5f;
+        color: #60a5fa;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 5px 14px;
+        border-radius: 20px;
+        margin-bottom: 28px;
+      }
+
+      .hero-tag span {
+        width: 6px;
+        height: 6px;
+        background: #60a5fa;
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      h1 {
+        font-size: clamp(36px, 6vw, 64px);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -1.5px;
+        color: #f8fafc;
+        max-width: 800px;
+        margin-bottom: 20px;
+      }
+
+      h1 .accent {
+        color: #6d8040;
+      }
+
+      .hero-sub {
+        font-size: 18px;
+        color: #64748b;
+        max-width: 520px;
+        line-height: 1.7;
+        margin-bottom: 40px;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .btn-lg {
+        padding: 13px 28px;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+
+      .btn-lg.primary {
+        background: #6d8040;
+        color: #fff;
+      }
+      .btn-lg.primary:hover {
+        background: #5a6b34;
+        transform: translateY(-1px);
+      }
+
+      .btn-lg.secondary {
+        background: transparent;
+        color: #94a3b8;
+        border: 1px solid #1e293b;
+      }
+      .btn-lg.secondary:hover {
+        border-color: #334155;
+        color: #f1f5f9;
+      }
+
+      /* CODE BLOCK */
+      .code-block {
+        margin-top: 60px;
+        width: 100%;
+        max-width: 680px;
+        background: #0d1117;
+        border: 1px solid #1e293b;
+        border-radius: 10px;
+        overflow: hidden;
+        text-align: left;
+      }
+
+      .code-header {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #1e293b;
+        background: #0d1117;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .dot.r {
+        background: #ff5f57;
+      }
+      .dot.y {
+        background: #febc2e;
+      }
+      .dot.g {
+        background: #28c840;
+      }
+
+      .code-label {
+        margin-left: auto;
+        font-size: 12px;
+        color: #475569;
+        font-family: monospace;
+      }
+
+      .code-body {
+        padding: 20px 24px;
+        font-family: 'Courier New', monospace;
+        font-size: 13.5px;
+        line-height: 1.8;
+      }
+
+      .c-method {
+        color: #60a5fa;
+        font-weight: 700;
+      }
+      .c-url {
+        color: #a3e635;
+      }
+      .c-key {
+        color: #f472b6;
+      }
+      .c-val {
+        color: #fb923c;
+      }
+      .c-str {
+        color: #34d399;
+      }
+      .c-dim {
+        color: #475569;
+      }
+
+      /* STATS */
+      .stats {
+        display: flex;
+        justify-content: center;
+        gap: 48px;
+        padding: 40px 24px;
+        border-top: 1px solid #1e293b;
+        flex-wrap: wrap;
+      }
+
+      .stat {
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #f1f5f9;
+        letter-spacing: -0.5px;
+      }
+      .stat-label {
+        font-size: 13px;
+        color: #475569;
+        margin-top: 4px;
+      }
+
+      /* FOOTER */
+      footer {
+        text-align: center;
+        padding: 20px;
+        border-top: 1px solid #1e293b;
+        font-size: 13px;
+        color: #334155;
+      }
+    </style>
+  </head>
+  <body>
+    <section class='hero'>
+      <div class='hero-tag'>
+        <span></span>
+        API is live and operational
+      </div>
+
+      <h1>The <span class='accent'>WabiSaviArt</span><br />REST API</h1>
+
+      <p class='hero-sub'>
+        A scalable, secure backend platform powering the WabiSaviArt
+        marketplace. Built with NestJS.
+      </p>
+
+      <div class='hero-actions'>
+        <a href='https://wabisabiart.com/' class='btn-lg primary'>Go to Website</a>
+        <a href='https://admin.wabisabiart.com' class='btn-lg secondary'>Go to
+          Admin →</a>
+      </div>
+    </section>
+
+    {{! <div class='stats'>
+      <div class='stat'>
+        <div class='stat-value'>REST</div>
+        <div class='stat-label'>Architecture</div>
+      </div>
+      <div class='stat'>
+        <div class='stat-value'>NestJS</div>
+        <div class='stat-label'>Framework</div>
+      </div>
+      <div class='stat'>
+        <div class='stat-value'>v1</div>
+        <div class='stat-label'>Current Version</div>
+      </div>
+      <div class='stat'>
+        <div class='stat-value'>JWT</div>
+        <div class='stat-label'>Auth Strategy</div>
+      </div>
+    </div> }}
+
+    <footer>
+      &copy;
+      <span id='year'></span>
+      WabiSaviArt. All rights reserved.
+    </footer>
+
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

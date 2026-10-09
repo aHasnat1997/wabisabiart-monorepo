@@ -1,0 +1,42 @@
+model Shipment {
+  id                    String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId               String         @db.Uuid
+  carrier               String         @db.Text
+  trackingNumber        String?        @db.Text
+  trackingUrl           String?        @db.Text
+  status                ShipmentStatus @default(pending)
+  shippingLabelUrl      String?        @db.Text
+  weight                Decimal?       @db.Decimal(10, 2)
+  estimatedDeliveryDate DateTime?      @db.Timestamptz(6)
+  actualDeliveryDate    DateTime?      @db.Timestamptz(6)
+  shippedAt             DateTime?      @db.Timestamptz(6)
+  createdAt             DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime       @default(now()) @updatedAt @db.Timestamptz(6)
+
+  order           Order                    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  trackingUpdates ShipmentTrackingUpdate[]
+
+  @@index([orderId])
+  @@index([trackingNumber])
+  @@index([status])
+  @@index([estimatedDeliveryDate])
+  @@index([actualDeliveryDate])
+  @@index([shippedAt])
+  @@schema("shipment")
+}
+
+model ShipmentTrackingUpdate {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shipmentId  String   @db.Uuid
+  status      String   @db.Text
+  description String?  @db.Text
+  location    String?  @db.Text
+  occurredAt  DateTime @db.Timestamptz(6)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  @@index([shipmentId])
+  @@index([occurredAt])
+  @@schema("shipment")
+}
