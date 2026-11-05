@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "bun@1.3.9",
-  "description": "WabiSabiArt (Rightkitkatie) monorepo \u2014 storefront, admin dashboard, and backend API",
+  "description": "WabiSabiArt (Rightkitkatie) monorepo — storefront, admin dashboard, and backend API",
   "workspaces": [
     "apps/*",
     "packages/db",
@@ -12,11 +12,11 @@
     "packages/types/backend"
   ],
   "scripts": {
-    "dev": "node api.js && turbo dev",
+    "dev": "turbo dev",
     "dev:backend": "turbo dev --filter=@wabisabiart/backend",
     "dev:storefront": "turbo dev --filter=@wabisabiart/storefront",
     "dev:admin": "turbo dev --filter=@wabisabiart/admin",
-    "build": "node api.js && turbo build",
+    "build": "turbo build",
     "build:backend": "turbo build --filter=@wabisabiart/backend",
     "build:storefront": "turbo build --filter=@wabisabiart/storefront",
     "build:admin": "turbo build --filter=@wabisabiart/admin",
